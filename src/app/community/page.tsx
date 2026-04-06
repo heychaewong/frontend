@@ -1,19 +1,32 @@
 "use client";
 import { useState, useEffect } from "react";
-
 import { useRouter } from "next/navigation";
-
 import PostCard from "@/components/PostCard";
-import { getPosts } from "@/lib/mockData";
+import { fetchPosts } from "@/lib/api";       // ✅ 교체
 import { Post } from "@/types/post";
 
 export default function CommunityPage() {
   const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);  // ✅ 추가
 
   useEffect(() => {
-    setPosts(getPosts());
+    const loadPosts = async () => {
+      try {
+        const data = await fetchPosts();
+        setPosts(data);
+      } catch (err) {
+        setError('게시글을 불러올 수 없습니다.'); 
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadPosts();
   }, []);
+
+  if (loading) return <div>로딩 중...</div>;  
+  if (error) return <div>{error}</div>;    
 
   return (
     <div style={{ padding: 16 }}>
@@ -35,6 +48,7 @@ export default function CommunityPage() {
       </div>
 
       <div style={{ display: "grid", gap: 12 }}>
+        {posts.length === 0 && <div>게시글이 없습니다.</div>}  
         {posts.map((post) => (
           <PostCard key={post.id} post={post} />
         ))}

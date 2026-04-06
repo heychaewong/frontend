@@ -60,8 +60,8 @@ export default function PostCard({ post }: PostCardProps) {
       {/* 게시글 작성일(ISO → 로케일 문자열) */}
       <p>작성일: {formatDate(post.createdAt)}</p>
       <p>
-        {/* 좋아요 수 / 댓글 수(댓글 배열 길이) */}
-        좋아요: {post.likes} / 댓글: {post.comments.length}
+        {/* 좋아요 수 / 댓글 수(목록 API의 commentCount) */}
+        좋아요: {post.likes} / 댓글: {post.commentCount}
       </p>
     </div>
   );
