@@ -23,9 +23,17 @@ export default function PostDetailPage() {
 
   // 마운트/ID 변경 시 localStorage에서 해당 게시글을 찾아옵니다.
   useEffect(() => {
-    const posts = getPosts();
-    const found = posts.find((p) => p.id === id) ?? null;
-    setPost(found);
+    const loadPost = async () => {
+      try {
+        const data = await fetchPost(id); // getPosts().find() -> API 호출로 교체체
+        setPost(data);
+      } catch (err) {
+        setError("게시글을 불러올 수 없습니다."); // 실패 시 에러 상태에 저장
+      } finally {
+        setLoading(false); // 성공/실패 상관없이 로딩 종료료
+      }
+    };
+    loadPost();
   }, [id]);
 
   const formatDate = (isoString: string) => {
