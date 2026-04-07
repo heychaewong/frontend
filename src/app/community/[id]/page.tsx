@@ -56,6 +56,10 @@ export default function PostDetailPage() {
   const handleDelete = async () => {
     const ok = confirm("정말 삭제하시겠습니까?"); // 삭제 전 확인 다이얼로그
     if (!ok) return;
+
+    try {
+      await deletePost(id); // API 호출
+    }
   }
 
   if (loading) return <div>로딩 중...</div>;
