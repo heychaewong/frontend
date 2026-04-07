@@ -1,10 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
 import {useState} from "react";
-import PostCard from "@/components/PostCard";
-import { getPosts, savePosts } from "@/lib/mockData";
-import { Post } from "@/types/post";
-import next from "next";
 import { createPost } from "@/lib/api";
 
 // TODO: 필요한 import를 추가하세요
@@ -46,26 +42,21 @@ const handleSubmit = async () => {
   }
 };
 
-  const newPost : Post = {
-    id: Date.now().toString(),
-    title: title,
-    content: content,
-    author: "익명",
-    createdAt: new Date().toISOString(),
-    likes: 0,
-    commentCount: 0,
-  };
-
-  const prevPosts = getPosts();
-  const nextPosts = [newPost, ...prevPosts];
-  savePosts(nextPosts);
-  router.push("/community");
-};
   return (
     <div>
       <div style={{ padding: 16 }}></div>
       <h1>글 작성</h1>
       <div style={{ display: "grid", gap: 10, maxWidth: 720}}>
+        <input
+        value={author}
+        onChange={(e) => setAuthor(e.target.value)}
+        placeholder="작성자를 입력하세요"
+        style={{
+          padding: "10px 12px", 
+          borderRadius: 8, 
+          border: "1px solid #e5e5e5",
+         }}
+        />
         <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -125,3 +116,4 @@ const handleSubmit = async () => {
       {/* TODO: 작성 버튼 (클릭 시 handleSubmit 호출) */}
     </div>
   );
+}
