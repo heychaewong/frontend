@@ -56,9 +56,11 @@ export default function PostDetailPage() {
   const handleDelete = async () => {
     const ok = confirm("정말 삭제하시겠습니까?"); // 삭제 전 확인 다이얼로그
     if (!ok) return;
-
     try {
       await deletePost(id); // API 호출
+      router.push("/community"); // 성공 시 목록으로 이동
+    } catch (err) {
+      alert("게시글 삭제에 실패했습니다."); // 에러 처리리
     }
   }
 
@@ -72,6 +74,35 @@ export default function PostDetailPage() {
   return (
     <div style={{ padding: 16 }}>
       <h1>게시글 상세</h1>
+      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+        <button
+          type="button"
+          onClick={() => router.push("/community")}
+          style={{
+            padding: "8px 12px",
+            borderRadius: 8,
+            border: "1px solid #e5e5e5",
+            cursor: "pointer",
+            background: "white",
+          }}
+        >
+          ← 목록으로
+        </button>
+
+        <button
+          type="button"
+          onClick={handleDelete}
+          style={{
+            padding: "8px 12px",
+            borderRadius: 8,
+            border: "1px solid #e5e5e5",
+            cursor: "pointer",
+            background: "white",
+          }}
+        >
+          삭제
+        </button>
+      </div>
       {!post ? (
         <p>해당 게시글을 찾을 수 없어요.</p>
       ) : (
