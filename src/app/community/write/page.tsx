@@ -93,7 +93,7 @@ const handleSubmit = async () => {
               background: "white"
             }}
           >
-            취소          
+            ← 목록으로          
           </button>
 
           <button 
