@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation"; // useRouter 추가 필요 (뒤로가기용)
 
 import CommentItem from "@/components/CommentItem";
-import { fetchPost, toggleLike, deletePost, createComment } from "@/lib/api";
+import { fetchPost, toggleLike, deletePost, createComment, deleteComment } from "@/lib/api";
 import { PostDetail } from "@/types/post";
 
 export default function PostDetailPage() {
@@ -81,6 +81,19 @@ export default function PostDetailPage() {
     setCommentAuthor("");
   } catch (err) {
     alert("댓글 작성에 실패했습니다.");  // 에러 처리
+  }
+};
+
+const handleCommentDelete = async (commentId: string) => {
+  try {
+    await deleteComment(commentId);
+    setPost((prev) =>
+      prev
+        ? { ...prev, comments: prev.comments.filter((c) => c.id !== commentId) }
+        : prev
+    );
+  } catch (err) {
+    alert("댓글 삭제에 실패했습니다.");
   }
 };
 
@@ -166,7 +179,7 @@ export default function PostDetailPage() {
                 <p style={{ color: "#777" }}>아직 댓글이 없어요.</p>
               ) : (
                 post.comments.map((comment) => (
-                  <CommentItem key={comment.id} comment={comment} />
+                  <CommentItem key={comment.id} comment={comment} onDelete={handleCommentDelete} />
                 ))
               )}
             </div>
