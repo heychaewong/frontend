@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation"; // useRouter 추가 필요 (뒤로가기용)
 
 import CommentItem from "@/components/CommentItem";
-import { fetchPost, toggleLike } from "@/lib/api";
+import { fetchPost, toggleLike, deletePost } from "@/lib/api";
 import { PostDetail } from "@/types/post";
 
 export default function PostDetailPage() {
@@ -51,6 +51,11 @@ export default function PostDetailPage() {
     catch (err) {
       alert("좋아요 처리에 실패했습니다."); // 에러 처리리
     }
+  }
+
+  const handleDelete = async () => {
+    const ok = confirm("정말 삭제하시겠습니까?"); // 삭제 전 확인 다이얼로그
+    if (!ok) return;
   }
 
   if (loading) return <div>로딩 중...</div>;
