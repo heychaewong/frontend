@@ -5,7 +5,7 @@ import PostCard from "@/components/PostCard";
 import { getPosts, savePosts } from "@/lib/mockData";
 import { Post } from "@/types/post";
 import next from "next";
-
+import { createPost } from "@/lib/api";
 
 // TODO: 필요한 import를 추가하세요
 // - useState (react)
@@ -27,9 +27,24 @@ const router = useRouter();
 
 const [title, setTitle] = useState("");
 const [content, setContent] = useState("");
+const [author, setAuthor] = useState("익명");
+const [submitting, setSubmitting] = useState(false);
 
-const handleSubmit = () => {
-  if (!title.trim() || !content.trim()) return;
+const handleSubmit = async () => {
+  if (!title.trim() || !content.trim()) {
+    alert("모든 항목을 입력해주세요.");
+    return;
+  }
+
+  setSubmitting(true);
+  try {
+    await createPost({title, content, author});
+    router.push("/community");
+  } catch (error) {
+    alert("게시글 작성에 실패했습니다.");
+    setSubmitting(false);
+  }
+};
 
   const newPost : Post = {
     id: Date.now().toString(),
@@ -38,7 +53,7 @@ const handleSubmit = () => {
     author: "익명",
     createdAt: new Date().toISOString(),
     likes: 0,
-    comments: [],
+    commentCount: 0,
   };
 
   const prevPosts = getPosts();
@@ -110,4 +125,3 @@ const handleSubmit = () => {
       {/* TODO: 작성 버튼 (클릭 시 handleSubmit 호출) */}
     </div>
   );
-}

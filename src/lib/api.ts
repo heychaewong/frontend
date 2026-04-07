@@ -17,7 +17,7 @@ export const fetchPost = async(id: string) : Promise<PostDetail> => {
     return res.data;
 };
 
-export const createPost = async(data: string) => {
+export const createPost = async (data: { title: string; content: string; author: string }) => {
     const res = await api.post("/posts", data);
     return res.data;
 };
