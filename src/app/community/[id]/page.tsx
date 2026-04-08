@@ -1,36 +1,32 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation"; // useRouter 추가 필요 (뒤로가기용)
+import { useParams, useRouter } from "next/navigation";
 
 import CommentItem from "@/components/CommentItem";
 import { fetchPost, toggleLike, deletePost, createComment, deleteComment } from "@/lib/api";
 import { PostDetail } from "@/types/post";
 
 export default function PostDetailPage() {
-  // URL /community/[id]에서 id 값을 가져옵니다.
   const params = useParams();
   const id = params.id as string;
-  const router = useRouter(); // 뒤로가기용
+  const router = useRouter();
 
-  // 선택된 게시글을 담을 state입니다.
-  const [post, setPost] = useState<PostDetail | null>(null); // post -> postdetail
-  const [loading, setLoading] = useState(true); // 로딩 상태 추가
-  const [error, setError] = useState<string | null>(null); // 에러 상태 추가
-
-  // 댓글 입력값 state입니다.
+  const [post, setPost] = useState<PostDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [commentContent, setCommentContent] = useState("");
-  const [commentAuthor, setCommentAuthor] = useState(""); // 작성자 상태 추가
-  // 마운트/ID 변경 시 localStorage에서 해당 게시글을 찾아옵니다.
+  const [commentAuthor, setCommentAuthor] = useState("");
+
   useEffect(() => {
     const loadPost = async () => {
       try {
-        const data = await fetchPost(id); // getPosts().find() -> API 호출로 교체체
+        const data = await fetchPost(id);
         setPost(data);
       } catch (err) {
-        setError("게시글을 불러올 수 없습니다."); // 실패 시 에러 상태에 저장
+        setError("게시글을 불러올 수 없습니다.");
       } finally {
-        setLoading(false); // 성공/실패 상관없이 로딩 종료
+        setLoading(false);
       }
     };
     loadPost();
@@ -45,139 +41,118 @@ export default function PostDetailPage() {
   const handleLike = async () => {
     if (!post) return;
     try {
-      const updated = await toggleLike(id); // API 호출출
-      setPost(updated); // 좋아요 수 즉시 반영영
-    } 
-    catch (err) {
-      alert("좋아요 처리에 실패했습니다."); // 에러 처리리
+      const updated = await toggleLike(id);
+      setPost(updated);
+    } catch (err) {
+      alert("좋아요 처리에 실패했습니다.");
     }
-  }
+  };
 
   const handleDelete = async () => {
-    const ok = confirm("정말 삭제하시겠습니까?"); // 삭제 전 확인 다이얼로그
+    const ok = confirm("정말 삭제하시겠습니까?");
     if (!ok) return;
     try {
-      await deletePost(id); // API 호출
-      router.push("/community"); // 성공 시 목록으로 이동
+      await deletePost(id);
+      router.push("/community");
     } catch (err) {
-      alert("게시글 삭제에 실패했습니다."); // 에러 처리리
+      alert("게시글 삭제에 실패했습니다.");
     }
-  }
+  };
 
- const handleComment = async () => {
-  if (!commentContent.trim() || !commentAuthor.trim()) {
-    alert("작성자와 댓글 내용을 입력해주세요.");  // 입력 검증
-    return;
-  }
-  try {
-    const newComment = await createComment(id, {  // API 호출
-      content: commentContent,
-      author: commentAuthor,
-    });
-    setPost((prev) =>
-      prev ? { ...prev, comments: [...prev.comments, newComment] } : prev
-    );  // 즉시 반영
-    setCommentContent("");   // 입력창 초기화
-    setCommentAuthor("");
-  } catch (err) {
-    alert("댓글 작성에 실패했습니다.");  // 에러 처리
-  }
-};
+  const handleComment = async () => {
+    if (!commentContent.trim() || !commentAuthor.trim()) {
+      alert("작성자와 댓글 내용을 입력해주세요.");
+      return;
+    }
+    try {
+      const newComment = await createComment(id, {
+        content: commentContent,
+        author: commentAuthor,
+      });
+      setPost((prev) =>
+        prev ? { ...prev, comments: [...prev.comments, newComment] } : prev
+      );
+      setCommentContent("");
+      setCommentAuthor("");
+    } catch (err) {
+      alert("댓글 작성에 실패했습니다.");
+    }
+  };
 
+  const handleCommentDelete = async (commentId: string) => {
+    try {
+      await deleteComment(commentId);
+      setPost((prev) =>
+        prev
+          ? { ...prev, comments: prev.comments.filter((c) => c.id !== commentId) }
+          : prev
+      );
+    } catch (err) {
+      alert("댓글 삭제에 실패했습니다.");
+    }
+  };
 
-const handleCommentDelete = async (commentId: string) => {
-  try {
-    await deleteComment(commentId);
-    setPost((prev) =>
-      prev
-        ? { ...prev, comments: prev.comments.filter((c) => c.id !== commentId) }
-        : prev
-    );
-  } catch (err) {
-    alert("댓글 삭제에 실패했습니다.");
-  }
-};
-
-  if (loading) return <div>로딩 중...</div>;
+  if (loading) return <div className="p-4">로딩 중...</div>;
   if (error) return (
-    <div style={{ padding: 16 }}>
+    <div className="p-4">
       <p>{error}</p>
-      <a href="/community">← 목록으로</a>
+      <a href="/community" className="text-blue-500 hover:underline">← 목록으로</a>
     </div>
-  )
+  );
+
   return (
-    <div style={{ padding: 16 }}>
-      <h1>게시글 상세</h1>
-      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold">게시글 상세</h1>
+
+      {/* 버튼 영역 */}
+      <div className="flex gap-2 mb-3">
         <button
           type="button"
           onClick={() => router.push("/community")}
-          style={{
-            padding: "8px 12px",
-            borderRadius: 8,
-            border: "1px solid #e5e5e5",
-            cursor: "pointer",
-            background: "white",
-          }}
+          className="px-3 py-2 rounded-lg border border-gray-200 cursor-pointer bg-white hover:bg-gray-50"
         >
           ← 목록으로
         </button>
-
         <button
           type="button"
           onClick={handleDelete}
-          style={{
-            padding: "8px 12px",
-            borderRadius: 8,
-            border: "1px solid #e5e5e5",
-            cursor: "pointer",
-            background: "white",
-          }}
+          className="px-3 py-2 rounded-lg border border-gray-200 cursor-pointer bg-white hover:bg-red-50 hover:text-red-500"
         >
           삭제
         </button>
       </div>
+
       {!post ? (
-        <p>해당 게시글을 찾을 수 없어요.</p>
+        <p className="text-gray-500">해당 게시글을 찾을 수 없어요.</p>
       ) : (
         <>
-          <div
-            style={{
-              border: "1px solid #e5e5e5",
-              borderRadius: 8,
-              padding: 12,
-            }}
-          >
-            <h2 style={{ marginTop: 0 }}>{post.title}</h2>
-            <p style={{ margin: "4px 0", color: "#555" }}>
+          {/* 게시글 */}
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h2 className="text-xl font-semibold mt-0">{post.title}</h2>
+            <p className="text-gray-500 my-1">
               작성자: {post.author} | 작성일: {formatDate(post.createdAt)}
             </p>
-            <p style={{ marginTop: 12, whiteSpace: "pre-wrap" }}>{post.content}</p>
+            <p className="mt-3 whitespace-pre-wrap">{post.content}</p>
 
-            <div style={{ marginTop: 12 }}>
+            <div className="mt-3">
               <button
                 type="button"
                 onClick={handleLike}
-                style={{
-                  padding: "8px 12px",
-                  borderRadius: 8,
-                  border: "1px solid #e5e5e5",
-                  cursor: "pointer",
-                  background: "white",
-                }}
+                className="px-3 py-2 rounded-lg border border-gray-200 cursor-pointer bg-white hover:bg-red-50 hover:text-red-500"
               >
                 좋아요
               </button>
-              <span style={{ marginLeft: 10 }}>좋아요 수: {post.likes}</span>
+              <span className="ml-3">좋아요 수: {post.likes}</span>
             </div>
           </div>
 
-          <div style={{ marginTop: 20 }}>
-            <h2 style={{ fontSize: 16 }}>댓글</h2>
+          {/* 댓글 */}
+          <div className="mt-5">
+            <h2 className="text-base font-semibold">댓글</h2>
 
-            <div style={{ display: "grid", gap: 10 }}>
+            <div className="grid gap-3">
               {post.comments.length === 0 ? (
-                <p style={{ color: "#777" }}>아직 댓글이 없어요.</p>
+                <p className="text-gray-400">아직 댓글이 없어요.</p>
               ) : (
                 post.comments.map((comment) => (
                   <CommentItem key={comment.id} comment={comment} onDelete={handleCommentDelete} />
@@ -185,37 +160,25 @@ const handleCommentDelete = async (commentId: string) => {
               )}
             </div>
 
-            <div style={{ marginTop: 12, display: "grid", gap: 8 }}>
-            <input
-              value={commentAuthor}
-              onChange={(e) => setCommentAuthor(e.target.value)}
-              placeholder="작성자를 입력하세요"
-              style={{ padding: "10px 12px", borderRadius: 8, border: "1px solid #e5e5e5" }}
+            {/* 댓글 입력 */}
+            <div className="mt-3 grid gap-2">
+              <input
+                value={commentAuthor}
+                onChange={(e) => setCommentAuthor(e.target.value)}
+                placeholder="작성자를 입력하세요"
+                className="px-3 py-2 rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-blue-200"
               />
               <textarea
                 value={commentContent}
                 onChange={(e) => setCommentContent(e.target.value)}
                 rows={4}
                 placeholder="댓글을 입력하세요"
-                style={{
-                  width: "100%",
-                  padding: "10px 12px",
-                  borderRadius: 8,
-                  border: "1px solid #e5e5e5",
-                  resize: "vertical",
-                }}
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 resize-y outline-none focus:ring-2 focus:ring-blue-200"
               />
               <button
                 type="button"
                 onClick={handleComment}
-                style={{
-                  marginTop: 8,
-                  padding: "8px 12px",
-                  borderRadius: 8,
-                  border: "1px solid #e5e5e5",
-                  cursor: "pointer",
-                  background: "white",
-                }}
+                className="mt-2 px-3 py-2 rounded-lg border border-gray-200 cursor-pointer bg-white hover:bg-gray-50"
               >
                 댓글 작성
               </button>

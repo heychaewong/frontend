@@ -18,7 +18,7 @@ export default function CommentItem({ comment, onDelete }: CommentItemProps) {
   const handleDelete = () => {
     const ok = confirm("정말 삭제하시겠습니까?"); // 확인 다이얼로그
     if (!ok) return;
-    onDelete(comment.id); // 부모한테 삭제 요청청
+    onDelete(comment.id); // 부모한테 삭제 요청
   }
 
   return (
