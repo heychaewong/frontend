@@ -7,6 +7,14 @@ const api = axios.create({
     headers: { "Content-Type": "application/json" },
 });
 
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
 // 예시: 게시글 목록 조회
 export const fetchPosts = async () : Promise<Post[]> => {
     const res = await api.get("/posts");
