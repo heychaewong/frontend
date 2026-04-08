@@ -15,7 +15,7 @@ export interface Post {
   commentCount : number;
 }
 
-export interface PostDetaill {
+export interface PostDetail {
   id: string;
   title: string;
   content: string;
