@@ -3,11 +3,6 @@ import { useRouter } from "next/navigation";
 import {useState} from "react";
 import { createPost } from "@/lib/api";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { getPosts, savePosts } from "@/lib/mockData";
-import { Post } from "@/types/post";
 
 export default function WritePage() {
   const router = useRouter();
@@ -20,10 +15,7 @@ export default function WritePage() {
   // 3. 새 글을 배열에 추가
   // 4. savePosts()로 저장
   // 5. router.push("/community")로 이동
-const router = useRouter();
 
-const [title, setTitle] = useState("");
-const [content, setContent] = useState("");
 const [author, setAuthor] = useState("익명");
 const [submitting, setSubmitting] = useState(false);
 
