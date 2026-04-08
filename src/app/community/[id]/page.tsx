@@ -67,7 +67,6 @@ export default function PostDetailPage() {
     try {
       const newComment = await createComment(id, {
         content: commentContent,
-        author: commentAuthor,
       });
       setPost((prev) =>
         prev ? { ...prev, comments: [...prev.comments, newComment] } : prev

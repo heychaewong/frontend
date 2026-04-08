@@ -19,7 +19,7 @@ export default function WritePage() {
 
     setSubmitting(true);
     try {
-      await createPost({ title, content, author });
+      await createPost({ title, content});
       router.push("/community");
     } catch (error) {
       alert("게시글 작성에 실패했습니다.");
