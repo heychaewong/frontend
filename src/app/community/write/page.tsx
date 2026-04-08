@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createPost } from "@/lib/api";
 
+
 export default function WritePage() {
   const router = useRouter();
   const [title, setTitle] = useState("");
