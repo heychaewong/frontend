@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Post, PostDetail } from "@/types/post";
+import { User, TokenResponse } from "@/types/auth";
 
 const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -39,5 +40,20 @@ export const createComment = async(id: string, data: {content: string; author: s
 
 export const deleteComment = async(commentId: string) => {
     const res = await api.delete(`/comments/${commentId}`);
+    return res.data;
+};
+
+export const register = async() => {
+    const res = await api.post(`/auth/register`);
+    return res.data;
+};
+
+export const login = async() => {
+    const res = await api.post(`/auth/login`);
+    return res.data;
+};
+
+export const getMe = async() => {
+    const res = await api.get(`/auth/me`);
     return res.data;
 };
